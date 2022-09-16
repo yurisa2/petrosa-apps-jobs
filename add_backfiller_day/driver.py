@@ -27,8 +27,9 @@ for symbol in asset_list_raw:
         item['symbol'] = symbol['symbol']
         item['day'] = start_date
         item['period'] = period
-        item['state'] = 0
+        item['state'] = 1
         item['checked'] = False
+        item['petrosa_timestamp'] = datetime.datetime.now()
         item_list.append(item)
 
 print(len(item_list))

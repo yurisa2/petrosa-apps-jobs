@@ -13,7 +13,7 @@ spec:
             image: yurisa2/petrosa-apps-jobs:latest
             env:
               - name: VERSION
-                value: "add_backfiller_day.0.0.1"
+                value: "add_backfiller_day.0.0.2"
               - name: MONGO_URI
                 valueFrom:
                   secretKeyRef:
