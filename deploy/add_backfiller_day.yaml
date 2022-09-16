@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: add_backfiller_day
+  name: add-backfiller-day
 spec:
   schedule: "0 0 * * *"
   jobTemplate:
@@ -13,7 +13,7 @@ spec:
             image: yurisa2/petrosa-apps-jobs:latest
             env:
               - name: VERSION
-                value: "add_backfiller_day.0.0.2"
+                value: "add-backfiller-day.0.0.2"
               - name: MONGO_URI
                 valueFrom:
                   secretKeyRef:
