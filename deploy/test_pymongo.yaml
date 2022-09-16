@@ -1,0 +1,28 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: petrosa-apps-jobs
+spec:
+  schedule: "* * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: petrosa-apps-jobs
+            image: yurisa2/petrosa-apps-jobs:latest
+            env:
+              - name: VERSION
+                value: "0.0.1"
+              - name: MONGO_URI
+                valueFrom:
+                  secretKeyRef:
+                    name: petrosa-apps-secret
+                    key: MONGO_URI
+                    optional: false
+
+            imagePullPolicy: IfNotPresent
+            command:
+            - python
+            - test_pymongo/driver.py
+          restartPolicy: OnFailure
