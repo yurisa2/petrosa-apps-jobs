@@ -11,5 +11,5 @@ client = pymongo.MongoClient(
 
 
 msg = {'date_now': datetime.datetime.now()}
-
 client.petrosa_crypto['test_jobs'].insert_one(msg)
+print(msg)
