@@ -21,8 +21,7 @@ spec:
                     key: MONGO_URI
                     optional: false
 
-            imagePullPolicy: IfNotPresent
-            command:
-            - python
-            - test_pymongo/driver.py
+            imagePullPolicy: Always
+            command: ["python"]
+            args: ["./test_pymongo/driver.py"]
           restartPolicy: OnFailure
