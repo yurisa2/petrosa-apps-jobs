@@ -1,0 +1,27 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: add_backfiller_day
+spec:
+  schedule: "0 0 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: petrosa-apps-jobs
+            image: yurisa2/petrosa-apps-jobs:latest
+            env:
+              - name: VERSION
+                value: "add_backfiller_day.0.0.1"
+              - name: MONGO_URI
+                valueFrom:
+                  secretKeyRef:
+                    name: petrosa-apps-secret
+                    key: MONGO_URI
+                    optional: false
+
+            imagePullPolicy: Always
+            command: ["python"]
+            args: ["./add_backfiller_day/driver.py"]
+          restartPolicy: OnFailure
