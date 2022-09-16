@@ -1,7 +1,7 @@
 import requests
 import datetime
 import pymongo
-
+import os
 
 client = pymongo.MongoClient(
                                         os.getenv(
@@ -17,7 +17,7 @@ asset_list_raw = requests.get(
 periods = ['5m', '15m', '30m', '1h']
 
 
-start_date = datetime.date.today().isoformat()
+start_date = (datetime.date.today() - datetime.timedelta(days=1)).isoformat()
 
 
 item_list = []
