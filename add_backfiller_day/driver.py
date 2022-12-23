@@ -19,8 +19,9 @@ socket_period_table = 'candles_h1'
 socket_period = 1
 socket_time = datetime.datetime.now() - datetime.timedelta(days=socket_period)
 
-logging.warning('Connecting to db to look for socket updates in the lest socket_period')
+logging.warning('Connecting to db to look for socket updates in the last socket_period')
 asset_list_raw_table = client.petrosa_crypto[socket_period_table]
+symbols_last_period = []
 asset_list_raw_list = asset_list_raw_table.find(
     {"datetime": {"$gte": socket_time}, "origin": 'socket'})
 symbols_last_period = list(dict.fromkeys(symbols_last_period))
@@ -28,7 +29,6 @@ symbols_last_period = list(dict.fromkeys(symbols_last_period))
 logging.warning(str(len(symbols_last_period)) +
                 ' unique tickers from sokec on the last socket_period')
 
-symbols_last_period = []
 
 for item in asset_list_raw_list:
     symbols_last_period.append(item['ticker'])
