@@ -13,15 +13,23 @@ spec:
             image: yurisa2/petrosa-apps-jobs:latest
             env:
               - name: VERSION
-                value: "add-backfiller-day.0.0.5"
+                value: "add-backfiller-day.0.0.6"
+              - name: NEW_RELIC_APP_NAME
+                value: "petrosa-apps-jobs-add-backfiller-day"
               - name: MONGO_URI
                 valueFrom:
                   secretKeyRef:
                     name: petrosa-apps-secret
                     key: MONGO_URI
                     optional: false
+              - name: NEW_RELIC_LICENSE_KEY
+                valueFrom:
+                  secretKeyRef:
+                    name: petrosa-apps-secret
+                    key: NEW_RELIC_LICENSE_KEY
+                    optional: false
 
             imagePullPolicy: Always
-            command: ["python"]
+            command: ["newrelic-admin",  "run-python"]
             args: ["./add_backfiller_day/driver.py"]
           restartPolicy: OnFailure

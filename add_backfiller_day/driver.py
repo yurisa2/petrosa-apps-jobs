@@ -2,14 +2,50 @@ import os
 import datetime
 import logging
 import pymongo
+import newrelic.agent
 
 
-client = pymongo.MongoClient(
-    os.getenv(
-        'MONGO_URI', 'mongodb://root:QnjfRW7nl6@localhost:27017'),
-    readPreference='secondaryPreferred',
-    appname='petrosa-nosql-crypto'
-)
+@newrelic.agent.background_task()
+def get_client():
+    client = pymongo.MongoClient(
+        os.getenv(
+            'MONGO_URI', 'mongodb://root:QnjfRW7nl6@localhost:27017'),
+        readPreference='secondaryPreferred',
+        appname='petrosa-nosql-crypto'
+    )
+    
+    return client
+
+
+@newrelic.agent.background_task()
+def write_bulk_list(update_list_commands):
+    db = get_client().petrosa_crypto
+    collection = db['backfill']
+    logging.warning('Writing to mongo... NOW')
+    collection.bulk_write(update_list_commands)
+
+    return True
+
+
+@newrelic.agent.background_task()
+def generate_update_commands(item_list):
+    update_list_commands = []
+
+    base_item = {}
+    base_item['state'] = 0
+    base_item['checked'] = False
+    base_item['petrosa_timestamp'] = datetime.datetime.now()
+
+    logging.warning('Creating DB commands')
+    for item in item_list:
+        cmm = pymongo.UpdateOne(item, {
+            "$setOnInsert": {**item, **base_item}
+        }, upsert=True)
+
+        update_list_commands.append(cmm)
+
+    return update_list_commands
+
 
 periods = ['5m', '15m', '30m', '1h']
 
@@ -53,25 +89,8 @@ for symbol in symbols_last_period:
 
 logging.warning('Size of the long tail: ' + str(len(item_list)))
 
-update_list_commands = []
 
-base_item = {}
-base_item['state'] = 0
-base_item['checked'] = False
-base_item['petrosa_timestamp'] = datetime.datetime.now()
-
-logging.warning('Creating DB commands')
-for item in item_list:
-    cmm = pymongo.UpdateOne(item, {
-        "$setOnInsert": {**item, **base_item}
-    }, upsert=True)
-
-    update_list_commands.append(cmm)
-
-db = client.petrosa_crypto
-collection = db['backfill']
-
-logging.warning('Writing to mongo... NOW')
-collection.bulk_write(update_list_commands)
+update_list = generate_update_commands(item_list)
+write_bulk_list(update_list)
 
 logging.warning('Bye')
