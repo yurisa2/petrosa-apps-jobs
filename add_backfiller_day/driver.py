@@ -56,7 +56,7 @@ socket_period = 1
 socket_time = datetime.datetime.now() - datetime.timedelta(days=socket_period)
 
 logging.warning('Connecting to db to look for socket updates in the last socket_period')
-asset_list_raw_table = client.petrosa_crypto[socket_period_table]
+asset_list_raw_table = get_client().petrosa_crypto[socket_period_table]
 symbols_last_period = []
 asset_list_raw_list = asset_list_raw_table.find(
     {"datetime": {"$gte": socket_time}, "origin": 'socket'})
