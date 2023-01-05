@@ -5,8 +5,13 @@ import pytz
 import json
 from kafka import KafkaProducer
 import logging
+import newrelic.agent
+
+
+
 
 class IntradayBackfiller(object):
+    @newrelic.agent.background_task()
     def __init__(self) -> None:
         self.client_mg = pymongo.MongoClient(
                                         os.getenv(
@@ -25,7 +30,9 @@ class IntradayBackfiller(object):
         logging.warning('Kafka Brokers : ' +
                         os.getenv('KAFKA_ADDRESS', 'localhost:9092'))
         logging.warning('Started Sender for: ' + self.topic)
-        
+
+
+    @newrelic.agent.background_task()
     def generate_benchmark_list(self, period: str):
         
         if period == '5m':
@@ -49,7 +56,9 @@ class IntradayBackfiller(object):
             datepointer = datepointer + datetime.timedelta(minutes=1)
         
         return division_list
-    
+
+
+    @newrelic.agent.background_task()
     def get_ticker_times(self, ticker: str, period: str):
         if period == '5m':
             suffix = 'm5'
@@ -73,7 +82,9 @@ class IntradayBackfiller(object):
             ret.append(row['datetime'])
         
         return ret
-    
+
+
+    @newrelic.agent.background_task()
     def xor_roots(self, ticker, period):
         benchmark = self.generate_benchmark_list(period)
         actual = self.get_ticker_times(ticker, period)
@@ -85,7 +96,9 @@ class IntradayBackfiller(object):
                 lacking.append(item)
                 
         return lacking
-    
+
+
+    @newrelic.agent.background_task()
     def get_ticker_list(self):
         socket_period_table = 'candles_h1'
         socket_period = 20
@@ -107,6 +120,8 @@ class IntradayBackfiller(object):
 
         return symbols_last_period
     
+    
+    @newrelic.agent.background_task()
     def send_info(self):
         ticker_list = self.get_ticker_list()
         period_list = ['5m', '15m', '30m', '1h']
