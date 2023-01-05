@@ -19,7 +19,7 @@ class IntradayBackfiller(object):
                                         appname='petrosa-intraday-backfiller'
                                         )
         
-        self.start = datetime.datetime.utcnow() - datetime.timedelta(hours=24)
+        self.start = datetime.datetime.utcnow() - datetime.timedelta(days=30)
         self.end = end = datetime.datetime.utcnow()
         self.producer = KafkaProducer(
             bootstrap_servers=os.getenv('KAFKA_ADDRESS', 'localhost:9093')
