@@ -13,7 +13,7 @@ spec:
             image: yurisa2/petrosa-apps-jobs:latest
             env:
               - name: VERSION
-                value: "0.0.6"
+                value: "0.0.7"
               - name: NEW_RELIC_APP_NAME
                 value: "petrosa-intraday-backfiller"
               - name: MONGO_URI

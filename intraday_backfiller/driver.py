@@ -6,7 +6,6 @@ import time
 
 import newrelic.agent
 import pymongo
-import pytz
 from kafka import KafkaProducer
 
 
@@ -20,8 +19,8 @@ class IntradayBackfiller(object):
                                         appname='petrosa-intraday-backfiller'
                                         )
         
-        self.start = datetime.datetime.now(tz=pytz.utc) - datetime.timedelta(hours=24)
-        self.end = end = datetime.datetime.now(tz=pytz.utc)
+        self.start = datetime.datetime.utcnow() - datetime.timedelta(hours=24)
+        self.end = end = datetime.datetime.utcnow()
         self.producer = KafkaProducer(
             bootstrap_servers=os.getenv('KAFKA_ADDRESS', 'localhost:9093')
         )
@@ -51,9 +50,11 @@ class IntradayBackfiller(object):
         
         while datepointer <= self.end:
             if(datepointer.minute % minutes == 0):
-                division_list.append(datepointer.replace(second=0,microsecond=0))
+                division_list.append(datepointer.replace(second=0, microsecond=0).strftime('%s'))
             
             datepointer = datepointer + datetime.timedelta(minutes=1)
+        
+        division_list.pop(-1)
         
         return division_list
 
@@ -79,7 +80,7 @@ class IntradayBackfiller(object):
         
         ret = []
         for row in list(time_found):
-            ret.append(row['datetime'])
+            ret.append(row['datetime'].strftime('%s'))
         
         return ret
 
@@ -102,8 +103,8 @@ class IntradayBackfiller(object):
     def get_ticker_list(self):
         socket_period_table = 'candles_h1'
         socket_period = 20
-        socket_time = datetime.datetime.now(
-            tz=pytz.utc) - datetime.timedelta(days=socket_period)
+        socket_time = datetime.datetime.utcnow(
+            ) - datetime.timedelta(days=socket_period)
 
         logging.warning(
             'Connecting to db to look for socket updates in the last socket_period')
@@ -133,9 +134,9 @@ class IntradayBackfiller(object):
                     msg = {}
                     msg['ticker'] = ticker
                     msg['period'] = period
-                    msg['max'] = max(missing_times).strftime('%s')
-                    msg['min'] = min(missing_times).strftime('%s')
-                    print(msg)
+                    msg['max'] = max(missing_times)
+                    msg['min'] = min(missing_times)
+                    logging.warning(msg)
                     self.producer.send(self.topic, bytes(json.dumps(msg), 'utf8'))
                     time.sleep(0.05)
                 else:
@@ -143,3 +144,4 @@ class IntradayBackfiller(object):
 
 ibf = IntradayBackfiller()
 ibf.send_info()
+logging.warning('Thank you, WE LOVE YOU ALLLLLLL')

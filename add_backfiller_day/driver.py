@@ -1,9 +1,9 @@
-import os
 import datetime
 import logging
-import pymongo
-import pytz
+import os
+
 import newrelic.agent
+import pymongo
 
 
 @newrelic.agent.background_task()
@@ -35,7 +35,7 @@ def generate_update_commands(item_list):
     base_item = {}
     base_item['state'] = 0
     base_item['checked'] = False
-    base_item['petrosa_timestamp'] = datetime.datetime.now(tz=pytz.utc)
+    base_item['petrosa_timestamp'] = datetime.datetime.utcnow()
 
     logging.warning('Creating DB commands')
     for item in item_list:
@@ -54,8 +54,8 @@ days_prior = 700
 
 socket_period_table = 'candles_h1'
 socket_period = 1
-socket_time = datetime.datetime.now(
-    tz=pytz.utc) - datetime.timedelta(days=socket_period)
+socket_time = datetime.datetime.utcnow(
+                                    ) - datetime.timedelta(days=socket_period)
 
 logging.warning('Connecting to db to look for socket updates in the last socket_period')
 asset_list_raw_table = get_client().petrosa_crypto[socket_period_table]
