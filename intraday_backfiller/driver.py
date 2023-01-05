@@ -126,6 +126,4 @@ class IntradayBackfiller(object):
                     continue
 
 ibf = IntradayBackfiller()
-
-# xor_list = ibf.xor_roots('BTCUSDT', '1h')
-print(ibf.send_info())
+ibf.send_info()
