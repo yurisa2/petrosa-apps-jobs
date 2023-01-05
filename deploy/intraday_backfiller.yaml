@@ -1,0 +1,41 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: intraday_backfiller
+spec:
+  schedule: "2,17,32,47 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: petrosa-apps-jobs
+            image: yurisa2/petrosa-apps-jobs:latest
+            env:
+              - name: VERSION
+                value: "0.0.1"
+              - name: NEW_RELIC_APP_NAME
+                value: "petrosa-intraday-backfiller"
+              - name: MONGO_URI
+                valueFrom:
+                  secretKeyRef:
+                    name: petrosa-apps-secret
+                    key: MONGO_URI
+                    optional: false
+              - name: KAFKA_ADDRESS
+                valueFrom:
+                  secretKeyRef:
+                    name: petrosa-apps-secret
+                    key: KAFKA_ADDRESS
+                    optional: false
+              - name: NEW_RELIC_LICENSE_KEY
+                valueFrom:
+                  secretKeyRef:
+                    name: petrosa-apps-secret
+                    key: NEW_RELIC_LICENSE_KEY
+                    optional: false
+
+            imagePullPolicy: Always
+            command: ["newrelic-admin",  "run-python"]
+            args: ["./intraday_backfiller/driver.py"]
+          restartPolicy: OnFailure
