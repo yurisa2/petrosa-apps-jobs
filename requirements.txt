@@ -1,1 +1,8 @@
-pymongo
+autopep8==2.0.1
+dnspython==2.2.1
+kafka-python==2.0.2
+newrelic==8.5.0
+pycodestyle==2.10.0
+pymongo==4.3.3
+pytz==2022.7
+tomli==2.0.1
