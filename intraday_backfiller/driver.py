@@ -1,13 +1,13 @@
-import pymongo
-import os
 import datetime
-import pytz
 import json
-from kafka import KafkaProducer
 import logging
+import os
+import time
+
 import newrelic.agent
-
-
+import pymongo
+import pytz
+from kafka import KafkaProducer
 
 
 class IntradayBackfiller(object):
@@ -122,7 +122,7 @@ class IntradayBackfiller(object):
     
     
     @newrelic.agent.background_task()
-    def send_info(self):
+    def send_info(self) -> None:
         ticker_list = self.get_ticker_list()
         period_list = ['5m', '15m', '30m', '1h']
         
@@ -137,6 +137,7 @@ class IntradayBackfiller(object):
                     msg['min'] = min(missing_times).strftime('%s')
                     print(msg)
                     self.producer.send(self.topic, bytes(json.dumps(msg), 'utf8'))
+                    time.sleep(0.05)
                 else:
                     continue
 
