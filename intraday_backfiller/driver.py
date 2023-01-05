@@ -17,7 +17,7 @@ class IntradayBackfiller(object):
                                         os.getenv(
                                             'MONGO_URI', 'mongodb://root:QnjfRW7nl6@localhost:27017'),
                                         readPreference='secondaryPreferred',
-                                        appname='petrosa-nosql-crypto'
+                                        appname='petrosa-intraday-backfiller'
                                         )
         
         self.start = datetime.datetime.now(tz=pytz.utc) - datetime.timedelta(hours=24)
@@ -25,7 +25,7 @@ class IntradayBackfiller(object):
         self.producer = KafkaProducer(
             bootstrap_servers=os.getenv('KAFKA_ADDRESS', 'localhost:9093')
         )
-        self.topic = 'intraday_backfilling'
+        self.topic = 'binance_intraday_backfilling'
 
         logging.warning('Kafka Brokers : ' +
                         os.getenv('KAFKA_ADDRESS', 'localhost:9092'))
