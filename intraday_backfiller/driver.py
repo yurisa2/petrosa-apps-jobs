@@ -76,8 +76,7 @@ class IntradayBackfiller(object):
         time_found = col.find({"ticker": ticker, 
                                "datetime": {"$gte": self.start}}, 
                               {"datetime": 1})
-        
-        
+                
         ret = []
         for row in list(time_found):
             ret.append(row['datetime'].strftime('%s'))
