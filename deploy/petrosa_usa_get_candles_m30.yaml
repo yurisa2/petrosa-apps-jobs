@@ -10,14 +10,14 @@ spec:
         spec:
           containers:
           - name: petrosa-apps-jobs
-            image: yurisa2/petrosa-apps-jobs:v0.0.14
+            image: yurisa2/petrosa-apps-jobs:v0.0.15
             env:
               - name: COL_NAME
                 value: "candles_m30"
               - name: MINUTES
                 value: "30"
               - name: VERSION
-                value: "0.0.14"
+                value: "0.0.15"
               - name: NEW_RELIC_APP_NAME
                 value: "petrosa-usa-get-candles-m30"
               - name: MONGO_URI
