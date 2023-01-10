@@ -10,10 +10,10 @@ spec:
         spec:
           containers:
           - name: petrosa-apps-jobs
-            image: yurisa2/petrosa-apps-jobs:latest
+            image: yurisa2/petrosa-apps-jobs:v0.0.14
             env:
               - name: VERSION
-                value: "add-backfiller-day.0.0.7"
+                value: "0.0.14"
               - name: NEW_RELIC_APP_NAME
                 value: "petrosa-apps-jobs-add-backfiller-day"
               - name: MONGO_URI

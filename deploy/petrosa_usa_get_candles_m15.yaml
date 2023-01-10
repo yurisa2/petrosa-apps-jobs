@@ -1,9 +1,9 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: petrosa-intraday-backfiller
+  name: petrosa-usa-get-candles-m15
 spec:
-  schedule: "4,18,33,48 * * * *"
+  schedule: "2,17,32,47 15-22 * * 1-5"
   jobTemplate:
     spec:
       template:
@@ -12,10 +12,14 @@ spec:
           - name: petrosa-apps-jobs
             image: yurisa2/petrosa-apps-jobs:v0.0.14
             env:
+              - name: COL_NAME
+                value: "candles_m15"
+              - name: MINUTES
+                value: "15"
               - name: VERSION
                 value: "0.0.14"
               - name: NEW_RELIC_APP_NAME
-                value: "petrosa-intraday-backfiller"
+                value: "petrosa-usa-get-candles-m15"
               - name: MONGO_URI
                 valueFrom:
                   secretKeyRef:
@@ -34,8 +38,14 @@ spec:
                     name: petrosa-apps-secret
                     key: NEW_RELIC_LICENSE_KEY
                     optional: false
+              - name: NEW_RELIC_LICENSE_KEY
+                valueFrom:
+                  secretKeyRef:
+                    name: petrosa-apps-secret
+                    key: NEW_RELIC_LICENSE_KEY
+                    optional: false
 
             imagePullPolicy: Always
             command: ["newrelic-admin",  "run-python"]
-            args: ["./intraday_backfiller/driver.py"]
+            args: ["./petrosa_usa_get_candles/driver.py"]
           restartPolicy: OnFailure
